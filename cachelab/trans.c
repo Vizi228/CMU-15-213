@@ -22,6 +22,61 @@ int is_transpose(int M, int N, int A[N][M], int B[M][N]);
 char transpose_submit_desc[] = "Transpose submission";
 void transpose_submit(int M, int N, int A[N][M], int B[M][N])
 {
+    int blocksize;
+    int row, col, i, j;
+    int a; 
+
+    if (M == 32 && N == 32) {
+        blocksize = 8;
+        for (row = 0; row < N; row += blocksize){
+            for (col = 0; col < M; col += blocksize){
+                for (i = row; i < row + blocksize && i < N; ++i){
+                    for (j = col; j < col + blocksize && j < M; ++j){
+                        if (i != j) {
+                            a = A[i][j];
+                            B[j][i] = a;
+                        }
+                    }
+                    if (row == col) {
+                        B[i][i] = A[i][i];
+                    }
+                }
+            }
+        }
+    }
+
+    if (M == 64 && N == 64) {
+        blocksize = 4;
+        for (row = 0; row < N; row += blocksize){
+            for (col = 0; col < M; col += blocksize){
+                for (i = row; i < row + blocksize && i < N; ++i){
+                    for (j = col; j < col + blocksize && j < M; ++j){
+                        if (i != j) {
+                            a = A[i][j];
+                            B[j][i] = a;
+                        }
+                    }
+                    if (row == col) {
+                        B[i][i] = A[i][i];
+                    }
+                }
+            }
+        }
+    }
+
+    if (M == 61 && N == 67) {
+        blocksize = 18;
+        for (row = 0; row < N; row += blocksize){
+            for (col = 0; col < M; col += blocksize){
+                for (i = row; i < row + blocksize && i < N; ++i){
+                    for (j = col; j < col + blocksize && j < M; ++j){
+                        a = A[i][j];
+                        B[j][i] = a;
+                    }
+                }
+            }
+        }
+    }
 }
 
 /* 
