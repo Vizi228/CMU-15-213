@@ -780,10 +780,13 @@ ssize_t rio_writen(int fd, void *usrbuf, size_t n)
 
     while (nleft > 0) {
 	if ((nwritten = write(fd, bufp, nleft)) <= 0) {
-	    if (errno == EINTR)  /* Interrupted by sig handler return */
-		nwritten = 0;    /* and call write() again */
-	    else
-		return -1;       /* errno set by write() */
+	    if (errno == EINTR)  /* interrupted by sig handler return */
+			nwritten = 0;    /* and call write() again */
+		else if (errno == EPIPE) {
+			fprintf(stderr, "EPIPE handled\n");
+			return n;
+		} else
+			return -1;       /* errorno set by write() */
 	}
 	nleft -= nwritten;
 	bufp += nwritten;
